@@ -18,7 +18,8 @@
 
     canvas {
         display: block;
-        margin:
+        width: 100%;
+        height: 100%;
     }
 </style>
 <body>
@@ -27,9 +28,8 @@
 <script src="js/commonFunctions.js"></script>
 <script>
     var canvas = document.getElementById('canvas');
-    canvas.width = 800;
-    canvas.height = 700;
-    canvas.style.border = '1px red solid';
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
     var ctx = canvas.getContext('2d');
     var balls = [];
     var colors = ["#33B5E5", "#0099CC", "#AA66CC", "#9933CC", "#99CC00", "#669900", "#FFBB33", "#FF8800", "#FF4444", "#CC0000"];
@@ -47,7 +47,7 @@
         requestAnimFrame(loop);
 
         render(ctx);
-//		update();
+		update();
         updateBalls();	//更新多数
 //console.log(balls.length);			
     }
@@ -62,8 +62,8 @@
             ball.y = 700 - ball.r;
             ball.vy = -ball.vy * .75;
         }
-        if (ball.y <= 0 + ball.r) {
-            ball.y = 0 + ball.r;
+        if (ball.y <= ball.r) {
+            ball.y = ball.r;
             ball.vy = -ball.vy * .75;
         }
 
@@ -71,8 +71,8 @@
             ball.x = 800 - ball.r;
             ball.vx = -ball.vx * .75;
         }
-        if (ball.x <= 0 + ball.r) {
-            ball.x = 0 + ball.r;
+        if (ball.x <= ball.r) {
+            ball.x = ball.r;
             ball.vx = -ball.vx * .75;
         }
 
