@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>无标题文档</title>
+</head>
+<style>
+    html {
+        height: 100%;
+        font: "Lucida Grande", "Microsoft JhengHei", "Microsoft YaHei"
+    }
+
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0
+    }
+
+    canvas {
+        display: block;
+        margin:
+    }
+</style>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+<script src="js/commonFunctions.js"></script>
+<script>
+    var canvas = document.getElementById('canvas');
+    canvas.width = 800;
+    canvas.height = 700;
+    canvas.style.border = '1px red solid';
+    var ctx = canvas.getContext('2d');
+    var balls = [];
+    var colors = ["#33B5E5", "#0099CC", "#AA66CC", "#9933CC", "#99CC00", "#669900", "#FFBB33", "#FF8800", "#FF4444", "#CC0000"];
+    var ball = {
+        x: 512,	//初始位置
+        y: 100,
+        r: 20,	//半径
+        g: 2,	//加速度
+        vx: -4,	//x轴速度
+        vy: -20,	//y轴速度
+        color: '#005588'
+    }
+
+    window.onload = function loop() {
+        requestAnimFrame(loop);
+
+        render(ctx);
+//		update();
+        updateBalls();	//更新多数
+//console.log(balls.length);			
+    }
+
+    function update() {
+        ball.x += ball.vx;//位置加上速度值(vx,vy)
+        ball.y += ball.vy;
+        ball.vy += ball.g;//y轴加上重力加速度
+
+        //碰撞检测
+        if (ball.y >= 700 - ball.r) {
+            ball.y = 700 - ball.r;
+            ball.vy = -ball.vy * .75;
+        }
+        if (ball.y <= 0 + ball.r) {
+            ball.y = 0 + ball.r;
+            ball.vy = -ball.vy * .75;
+        }
+
+        if (ball.x >= 800 - ball.r) {
+            ball.x = 800 - ball.r;
+            ball.vx = -ball.vx * .75;
+        }
+        if (ball.x <= 0 + ball.r) {
+            ball.x = 0 + ball.r;
+            ball.vx = -ball.vx * .75;
+        }
+
+
+    }
+
+    function updateBalls() {
+        for (var i = 0; i < balls.length; i++) {
+            balls[i].x += balls[i].vx;
+            balls[i].y += balls[i].vy;
+            balls[i].vy += balls[i].g;
+            if (balls[i].y >= canvas.height - balls[i].r) {
+                balls[i].y = canvas.height - balls[i].r;
+                balls[i].vy = -balls[i].vy * .9;
+            }
+            if (balls[i].y <= 0 + balls[i].r) {
+                balls[i].y = 0 + balls[i].r;
+                balls[i].vy = -balls[i].vy * .9;
+            }
+            if (balls[i].x >= 800 - balls[i].r) {
+                balls[i].x = 800 - balls[i].r;
+                balls[i].vx = -balls[i].vx * .9;
+            }
+            if (balls[i].x <= 0 + balls[i].r) {
+                balls[i].x = 0 + balls[i].r;
+                balls[i].vx = -balls[i].vx * .9;
+            }
+
+
+        }
+//删除超出范围小球
+        var cnt = 0;
+        for (var i = 0; i < balls.length; i++) {
+            if (balls[i].x + balls[i].r > 0 && balls[i].x - balls[i].r < canvas.width) {
+                balls[cnt++] = balls[i];
+            }
+        }
+
+        while (balls.length > Math.min(100, cnt)) {
+            balls.pop();
+        }
+
+    }
+
+    //绘制小球
+    function render(ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < balls.length; i++) {
+            //ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = balls[i].color;
+            ctx.beginPath();
+            ctx.arc(balls[i].x, balls[i].y, balls[i].r, 0, 2 * Math.PI, true);
+            ctx.closePath();
+            ctx.fill();
+        }
+        /*ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle=ball.color;
+        ctx.beginPath();
+        ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+        ctx.closePath();
+        ctx.fill();	*/
+    }
+
+    //添加小球
+    function addBall(X, Y, R, Num) {
+        for (var i = 0; i < Num; i++) {
+            var aBall = {
+                x: X,
+                y: Y,
+                r: R,
+                g: 1.5 + Math.random(),
+                vx: Math.pow(-1, Math.ceil(Math.random() * 1000)) * 4,//随机取数，偶数取1，奇数取-1
+                vy: -(Math.floor(Math.random() * 25)),
+                color: colors[Math.floor(Math.random() * colors.length)]
+            }
+            balls.push(aBall);
+        }
+
+    }
+
+    //click
+    window.document.body.onmousedown = function (ev) {
+        var oE = ev || event;
+        var oL = oE.clientX > 800 ? canvas.width : oE.clientX;
+        var oT = oE.clientY > 700 ? 700 : oE.clientY;
+        //ball.x=oL;
+        //ball.y=oT;
+        console.log(oE.clientX)
+        set(oL, oT);
+    }
+    var time;
+
+    function set(oL, oT) {
+        var i = 1;
+        time = setInterval(function () {
+            addBall(oL, oT, 15, 1)
+        }, 100);
+    }
+
+    window.document.body.onmouseup = function () {
+
+        clearInterval(time)
+    }
+</script>
+</html>
